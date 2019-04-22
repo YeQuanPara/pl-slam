@@ -1,3 +1,11 @@
+First of all, I am very grateful to rubengooj for the open source code.
+I encountered a lot of problems during the make process, here to record the problems and solutions in the compilation process.		
+1. opencv：
+2. Eigen3：
+3. boost：	
+4. g2o:		
+5. MRPT:
+
 Notice that this repository is only an open-source version of PL-SLAM released with the aim of being useful for the community, however, it is far from being optimized and we are not including some features of PL-SLAM.
 
 # PL-SLAM #
