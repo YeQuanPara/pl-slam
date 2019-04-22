@@ -1,10 +1,46 @@
 First of all, I am very grateful to rubengooj for the open source code.
 I encountered a lot of problems during the make process, here to record the problems and solutions in the compilation process.		
 1. opencv：
-2. Eigen3：
-3. boost：	
-4. g2o:		
-5. MRPT:
+I ended up installing opencv3.2.0 and opencv_contrib-3.2.0.
+https://github.com/opencv/opencv/tree/3.2.0		
+https://github.com/opencv/opencv_contrib/tree/3.2.0
+cmake:
+cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr/local -D OPENCV_EXTRA_MODULES_PATH=../opencv_contrib-3.2.0/modules/ ..
+2. Eigen3：sudo apt-get install libeigen3-dev
+3. boost：sudo apt-get install libboost-dev
+You may encounter the following problems during the compilation process.
+Cmake can't link boost to the following:
+- boost_regex
+- boost_thread
+- boost_system
+- boost_filesystem
+
+First, you need to confirm if boost_system exists.If it exists, and  could not be found.
+You should install  libboost-filesystem-dev.
+	sudo apt-get install libboost-filesystem-dev
+then install  libboost-regex-dev， libboost-thread-dev...，anyway，What you are missing：
+	sudo apt-get install libboost-regex-dev
+	sudo apt-get install libboost-thread-dev
+4. g2o:	I use the newest version(https://github.com/RainerKuemmerle/g2o).
+Then you could see that:
+error: no matching function for call to ‘g2o::BlockSolver<g2o::BlockSolverTraits<6, 3> ...
+error: no matching function for call to ‘g2o::OptimizationAlgorithmLevenberg::OptimizationAlgorithmLevenberg(g2o::BlockSolver_6_3&)’
+g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);	
+
+You can change
+g2o::BlockSolver_6_3::LinearSolverType* linearSolver;
+linearSolver = new g2o::LinearSolverCholmodg2o::BlockSolver_6_3::PoseMatrixType();
+g2o::BlockSolver_6_3* solver_ptr = new g2o::BlockSolver_6_3(linearSolver);
+g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
+
+to
+
+std::unique_ptr<g2o::BlockSolver_6_3::LinearSolverType> linearSolver(new g2o::LinearSolverCholmod<g2o::BlockSolver_6_3::PoseMatrixType>());
+std::unique_ptr<g2o::BlockSolver_6_3> solver_ptr(new g2o::BlockSolver_6_3(std::move(linearSolver)));
+g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg(std::move(solver_ptr));
+
+
+5. MRPT: I use https://github.com/MRPT/mrpt/tree/0c3d605c3cbf5f2ffb8137089e43ebdae5a55de3.	
 
 Notice that this repository is only an open-source version of PL-SLAM released with the aim of being useful for the community, however, it is far from being optimized and we are not including some features of PL-SLAM.
 
